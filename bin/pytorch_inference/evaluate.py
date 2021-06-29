@@ -65,7 +65,7 @@ def path_to_app():
 
 def launch_pytorch_app(args):
 
-    command = [path_to_app(),
+    command = ['valgrind','--tool=massif','--pages-as-heap=yes', '--time-unit=ms', path_to_app(),
         '--restore=' + args.restore_file,
         '--input=' + args.input_file,
         '--output=' + args.output_file]

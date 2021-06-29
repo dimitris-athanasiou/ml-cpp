@@ -232,13 +232,13 @@ int main(int argc, char** argv) {
 
     // Reduce memory priority before installing system call filters.
     ml::core::CProcessPriority::reduceMemoryPriority();
-    ml::seccomp::CSystemCallFilter::installSystemCallFilter();
 
     if (ioMgr.initIo() == false) {
         LOG_FATAL(<< "Failed to initialise IO");
         return EXIT_FAILURE;
     }
 
+    {
     torch::jit::script::Module module;
     try {
         auto readAdapter = std::make_unique<ml::torch::CBufferedIStreamAdapter>(
@@ -255,6 +255,10 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+
+    LOG_INFO(<< "Before first sleep");
+    std::this_thread::sleep_for(std::chrono::milliseconds(30000));
+
     ml::torch::CCommandParser commandParser{ioMgr.inputStream()};
 
     rapidjson::OStreamWrapper writeStream(ioMgr.outputStream());
@@ -269,6 +273,10 @@ int main(int argc, char** argv) {
             writeError(requestId, message, jsonWriter);
         });
     jsonWriter.EndArray();
+    }
+
+    LOG_INFO(<< "Before final sleep");
+    std::this_thread::sleep_for(std::chrono::milliseconds(30000));
     LOG_DEBUG(<< "ML Torch model prototype exiting");
 
     return EXIT_SUCCESS;
